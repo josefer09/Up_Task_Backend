@@ -46,38 +46,38 @@ export class TaskController {
     getById = (req: Request, res: Response) => {
 
         const project = req.project;
-        const { taskId } = req.params;
+        const task = req.task;
 
-        this.service.getTaskById(project, taskId)
+        this.service.getTaskById(project, task)
         .then( task => res.json(task))
         .catch( error => this.handleError(error, res));
     }
 
     put = (req: Request, res: Response) => {
         const project = req.project;
-        const { taskId } = req.params;
         const taskData: ITask = req.body;
+        const task = req.task;
 
-        this.service.updateTask(project, taskId, req.body)
+        this.service.updateTask(project, task, req.body)
         .then( taskUpdated => res.json(taskUpdated))
         .catch( error => this.handleError(error, res));
     }
 
     delete = (req: Request, res: Response) => {
         const project = req.project;
-        const { taskId } = req.params;
+        const task = req.task;
 
-        this.service.deleteTask(project, taskId)
+        this.service.deleteTask(project, task)
         .then( taskDeleted => res.json(taskDeleted))
         .catch( error => this.handleError(error, res));
     }
 
     postStatus = (req: Request, res: Response) => {
         const project = req.project;
-        const { taskId } = req.params;
+        const task = req.task;
         const { status } = req.body;
 
-        this.service.updateStatus(project, taskId, status)
+        this.service.updateStatus(project, task, status)
         .then( taskStatus => res.json(taskStatus))
         .catch( error => this.handleError(error, res));
     }

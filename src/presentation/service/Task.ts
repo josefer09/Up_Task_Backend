@@ -38,13 +38,10 @@ export class TaskService {
         }
     }
 
-    async getTaskById(project: IProject, taskId: string) {
+    async getTaskById(project: IProject, task: ITask) {
         try {
-            const task = await Task.findById(taskId).populate('project');
-
-            if(!task) throw CustomError.notFound(`Task with id: ${taskId} not found`);
-
-            if( task.project.id != project.id ) throw CustomError.badRequest('Action not valid, this task is from other project');
+            console.log(task);
+            if( task.project.toString() !== project.id.toString() ) throw CustomError.badRequest('Action not valid, this task is from other project');
 
             return task;
 
@@ -55,13 +52,11 @@ export class TaskService {
         }
     }
 
-    async updateTask(project: IProject, taskId: string, dataUpdate: ITask) {
+    async updateTask(project: IProject, task: ITask, dataUpdate: ITask) {
         try {
-            const task = await Task.findById(taskId).populate('project');
-
-            if(!task) throw CustomError.notFound(`Task with id ${taskId} not found`);
-
-            if(task.project.id !== project.id) throw CustomError.unauthorized('Action not valid');
+            console.log(task.project.toString());
+            console.log(project.id.toString());
+            if(task.project.toString() !== project.id.toString()) throw CustomError.unauthorized('Action not valid');
 
             if(dataUpdate.name !== undefined ) {
                 task.name = dataUpdate.name;
@@ -84,17 +79,13 @@ export class TaskService {
         }
     }
 
-    async deleteTask(project: IProject, taskId: string) {
+    async deleteTask(project: IProject, task: ITask) {
         try {
-            const task = await Task.findById(taskId).populate('project');
+            if( task.project.toString() !== project.id.toString() ) throw CustomError.unauthorized('Action not valid');
 
-            if( !task ) throw CustomError.notFound(`Task with id ${taskId} not found`);
+            project.tasks = project.tasks.filter( currentTask => currentTask!.toString() !== task?.id.toString());
 
-            if( task.project.id !== project.id ) throw CustomError.unauthorized('Action not valid');
-
-            project.tasks = project.tasks.filter( task => task!.toString() !== taskId )
-
-            await Promise.allSettled([task.deleteOne(), project.save()]);
+           await Promise.allSettled([task.deleteOne(), project.save()]);
 
             return {
                 msg: 'Task deleted succefully',
@@ -107,13 +98,9 @@ export class TaskService {
         }
     }
 
-    async updateStatus(project: IProject, taskId: string, status: TaskStatus) {
+    async updateStatus(project: IProject, task: ITask, status: TaskStatus) {
         try {
-            const task = await Task.findById(taskId).populate('project');
-
-            if( !task ) throw CustomError.notFound(`Task with id ${taskId} not found`);
-
-            if( task.project.id !== project.id ) throw CustomError.unauthorized('Action not valid');
+            if( task.project.toString() !== project.id.toString() ) throw CustomError.unauthorized('Action not valid');
             console.log(status);
 
             if( !['pending', 'onHold', 'inProgress', 'underReview', 'completed'].includes(status) ) {

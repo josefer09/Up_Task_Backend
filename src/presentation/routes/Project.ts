@@ -6,6 +6,7 @@ import { handleInputError } from "../middleware/validation";
 import { TaskController } from "../controller";
 import { TaskService } from "../service/Task";
 import { validateProjectExist } from "../middleware/Project";
+import { validateTaskExist } from "../middleware/Task";
 
 export class ProjectRoutes {
   static get routes(): Router {
@@ -40,56 +41,42 @@ export class ProjectRoutes {
       controller.delete
     );
 
-    // Task
-    // router.param("projectId", validateProjectExist); // Mientras el parametro exista, se ejecuta el callback o middleware
+    // Task Router
+    router.param("projectId", param("projectId").isMongoId().withMessage("Id is not MongoId"));
+    router.param("projectId", handleInputError); // Mientras el parametro exista, se ejecuta el middleware
+    router.param("projectId", validateProjectExist);
+
+    router.param("taskId", param("taskId").isMongoId().withMessage("Id is not MongoId"));
+    router.param("taskId", handleInputError);
+    router.param("taskId", validateTaskExist);
 
     router.post(
       "/:projectId/task",
-      param("projectId").isMongoId().withMessage("id is not MongoId"),
-      handleInputError,
-      validateProjectExist,
       taskController.post
     );
+
     router.get(
       "/:projectId/task",
-      param("projectId").isMongoId().withMessage("id is not MongoId"),
-      handleInputError,
-      validateProjectExist,
       taskController.get
     );
+
     router.get(
       "/:projectId/task/:taskId",
-      param("projectId").isMongoId().withMessage("id is not MongoId"),
-      param("taskId").isMongoId().withMessage("id is not MongoId"),
-      handleInputError,
-      validateProjectExist,
       taskController.getById
     );
 
     router.put(
       "/:projectId/task/:taskId",
-      param("projectId").isMongoId().withMessage("id is not MongoId"),
-      param("taskId").isMongoId().withMessage("id is not MongoId"),
-      handleInputError,
-      validateProjectExist,
       taskController.put,
     );
 
     router.delete(
       "/:projectId/task/:taskId",
-      param("projectId").isMongoId().withMessage("id is not MongoId"),
-      param("taskId").isMongoId().withMessage("id is not MongoId"),
-      handleInputError,
-      validateProjectExist,
       taskController.delete,
     );
 
     router.post(
       "/:projectId/task/:taskId",
-      param("projectId").isMongoId().withMessage("id is not MongoId"),
-      param("taskId").isMongoId().withMessage("id is not MongoId"),
-      handleInputError,
-      validateProjectExist,
       taskController.postStatus,
     )
 
