@@ -40,11 +40,7 @@ export class TaskService {
 
     async getTaskById(project: IProject, task: ITask) {
         try {
-            console.log(task);
-            if( task.project.toString() !== project.id.toString() ) throw CustomError.badRequest('Action not valid, this task is from other project');
-
             return task;
-
         } catch (error) {
             if( error instanceof CustomError) throw error;
             console.log(error);
@@ -54,10 +50,6 @@ export class TaskService {
 
     async updateTask(project: IProject, task: ITask, dataUpdate: ITask) {
         try {
-            console.log(task.project.toString());
-            console.log(project.id.toString());
-            if(task.project.toString() !== project.id.toString()) throw CustomError.unauthorized('Action not valid');
-
             if(dataUpdate.name !== undefined ) {
                 task.name = dataUpdate.name;
             }
@@ -81,8 +73,6 @@ export class TaskService {
 
     async deleteTask(project: IProject, task: ITask) {
         try {
-            if( task.project.toString() !== project.id.toString() ) throw CustomError.unauthorized('Action not valid');
-
             project.tasks = project.tasks.filter( currentTask => currentTask!.toString() !== task?.id.toString());
 
            await Promise.allSettled([task.deleteOne(), project.save()]);
@@ -100,9 +90,6 @@ export class TaskService {
 
     async updateStatus(project: IProject, task: ITask, status: TaskStatus) {
         try {
-            if( task.project.toString() !== project.id.toString() ) throw CustomError.unauthorized('Action not valid');
-            console.log(status);
-
             if( !['pending', 'onHold', 'inProgress', 'underReview', 'completed'].includes(status) ) {
                 throw CustomError.forbidden(`Status: ${status} is incompatible`)
             }

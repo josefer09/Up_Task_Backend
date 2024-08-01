@@ -6,7 +6,7 @@ import { handleInputError } from "../middleware/validation";
 import { TaskController } from "../controller";
 import { TaskService } from "../service/Task";
 import { validateProjectExist } from "../middleware/Project";
-import { validateTaskExist } from "../middleware/Task";
+import { taskBelongToProject, validateTaskExist } from "../middleware/Task";
 
 export class ProjectRoutes {
   static get routes(): Router {
@@ -49,6 +49,7 @@ export class ProjectRoutes {
     router.param("taskId", param("taskId").isMongoId().withMessage("Id is not MongoId"));
     router.param("taskId", handleInputError);
     router.param("taskId", validateTaskExist);
+    router.param("taskId", taskBelongToProject);
 
     router.post(
       "/:projectId/task",
